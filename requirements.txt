@@ -1,4 +1,7 @@
 fastapi
+fastapi-users[sqlalchemy]
+fastapi-users-db-sqlalchemy
+email-validator
 uvicorn[standard]
 jinja2
 pydantic

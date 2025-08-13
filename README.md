@@ -13,12 +13,12 @@
 - Uvicorn — сервер запуска
 - Docker
 
-## Склонируйте проект**
+## Склонируйте проект
 ```bash
 git clone 
 ```
 
-## Создайте виртуальное окружение и активируйте его**
+## Создайте виртуальное окружение и активируйте его
 ```bash
 python -m venv venv
 ```
@@ -30,6 +30,7 @@ python -m venv venv
 ```bash
 cp .env.example .env
 docker-compose up --build
+docker compose exec business_api sh -lc "PYTHONPATH=/app alembic revision -m 'initial schema' --autogenerate"
 docker exec -it business_api alembic upgrade head
 ```
 Откройте: http://127.0.0.1:8000

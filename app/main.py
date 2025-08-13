@@ -1,13 +1,18 @@
-from fastapi import FastAPI, Request, Depends
+from fastapi import APIRouter, FastAPI, Request, Depends
 from fastapi.responses import HTMLResponse
-from starlette.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
+from starlette.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.config import settings
+
 from app.api.v1.routes import router as api_v1_router
+from app.auth.auth import fastapi_users, auth_backend, current_user
+from app.auth.schemas import UserRead, UserCreate, UserUpdate
+from app.core.config import settings
 from app.db.session import get_session
+from app.models.user import User
+
 
 app = FastAPI(title=settings.APP_NAME)
 
@@ -31,6 +36,7 @@ def index(request: Request):
 def health():
     return {"status": "ok"}
 
+
 @app.get("/db-check")
 async def db_check(session: AsyncSession = Depends(get_session)):
     result = await session.execute(
@@ -49,3 +55,17 @@ async def db_check(session: AsyncSession = Depends(get_session)):
     }
 
 app.include_router(api_v1_router, prefix="/api/v1")
+app.include_router(fastapi_users.get_auth_router(auth_backend), prefix="/auth/jwt", tags=["auth"])
+app.include_router(fastapi_users.get_register_router(UserRead, UserCreate), prefix="/auth", tags=["auth"])
+app.include_router(fastapi_users.get_users_router(UserRead, UserUpdate), prefix="/users", tags=["users"])
+
+users_me_delete_router = APIRouter()
+
+
+@users_me_delete_router.delete("/users/me", tags=["users"])
+async def delete_me(user: User = Depends(current_user)):
+    user_manager = (await fastapi_users.get_user_manager().__anext__())
+    await user_manager.delete(user)
+    return {"status": "deleted"}
+
+app.include_router(users_me_delete_router)
