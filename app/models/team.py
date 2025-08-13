@@ -1,0 +1,25 @@
+from sqlalchemy import Integer, String, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from .base import Base
+
+
+class Team(Base):
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    code: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
+    owner_id: Mapped[int | None] = mapped_column(ForeignKey("user.id"), nullable=True)
+
+    members: Mapped[list["UserTeam"]] = relationship(back_populates="team", cascade="all, delete-orphan")
+    tasks: Mapped[list["Task"]] = relationship(back_populates="team")
+    meetings: Mapped[list["Meeting"]] = relationship(back_populates="team")
+
+
+class UserTeam(Base):
+    __tablename__ = "user_teams"
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)
+    team_id: Mapped[int] = mapped_column(ForeignKey("team.id"), primary_key=True)
+    role_in_team: Mapped[str] = mapped_column(String(20), default="user")
+
+    user: Mapped["User"] = relationship(back_populates="teams")
+    team: Mapped["Team"] = relationship(back_populates="members")
