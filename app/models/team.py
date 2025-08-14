@@ -1,4 +1,6 @@
-from sqlalchemy import Integer, String, ForeignKey
+import enum
+
+from sqlalchemy import Enum, Integer, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -15,11 +17,16 @@ class Team(Base):
     meetings: Mapped[list["Meeting"]] = relationship(back_populates="team")
 
 
+class TeamRole(str, enum.Enum):
+    admin = "admin"
+    manager = "manager"
+    employee = "employee"
+
+
 class UserTeam(Base):
     __tablename__ = "user_teams"
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)
     team_id: Mapped[int] = mapped_column(ForeignKey("team.id"), primary_key=True)
-    role_in_team: Mapped[str] = mapped_column(String(20), default="user")
-
+    role_in_team: Mapped[TeamRole] = mapped_column(Enum(TeamRole, name="team_role"), nullable=False, default=TeamRole.employee)
     user: Mapped["User"] = relationship(back_populates="teams")
     team: Mapped["Team"] = relationship(back_populates="members")
