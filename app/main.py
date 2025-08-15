@@ -1,5 +1,6 @@
 from fastapi import APIRouter, FastAPI, Request, Depends
 from fastapi.responses import HTMLResponse
+from fastapi.security import HTTPBearer
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.cors import CORSMiddleware
 from sqlalchemy import text
@@ -26,6 +27,7 @@ app.add_middleware(
 
 templates = Jinja2Templates(directory="app/web/templates")
 
+http_bearer = HTTPBearer()
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
@@ -55,9 +57,24 @@ async def db_check(session: AsyncSession = Depends(get_session)):
     }
 
 app.include_router(api_v1_router, prefix="/api/v1")
-app.include_router(fastapi_users.get_auth_router(auth_backend), prefix="/auth/jwt", tags=["auth"])
-app.include_router(fastapi_users.get_register_router(UserRead, UserCreate), prefix="/auth", tags=["auth"])
-app.include_router(fastapi_users.get_users_router(UserRead, UserUpdate), prefix="/users", tags=["users"])
+app.include_router(
+    fastapi_users.get_auth_router(auth_backend),
+    prefix="/auth/jwt",
+    tags=["auth"],
+    dependencies=[Depends(http_bearer)],
+)
+app.include_router(
+    fastapi_users.get_register_router(UserRead, UserCreate),
+    prefix="/auth",
+    tags=["auth"],
+    dependencies=[Depends(http_bearer)],
+)
+app.include_router(
+    fastapi_users.get_users_router(UserRead, UserUpdate),
+    prefix="/users",
+    tags=["users"],
+    dependencies=[Depends(http_bearer)],
+)
 
 users_me_delete_router = APIRouter()
 

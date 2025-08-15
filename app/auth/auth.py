@@ -8,7 +8,7 @@ from app.auth.manager import get_user_manager
 from app.core.config import settings
 from app.models.user import User
 
-bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
+bearer_transport = BearerTransport(tokenUrl="/auth/jwt/login")
 
 
 def get_database_strategy(
