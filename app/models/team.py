@@ -1,13 +1,12 @@
 import enum
 
-from sqlalchemy import Enum, Integer, String, ForeignKey
+from sqlalchemy import Enum, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
 
 
 class Team(Base):
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     code: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
     owner_id: Mapped[int | None] = mapped_column(ForeignKey("user.id"), nullable=True)

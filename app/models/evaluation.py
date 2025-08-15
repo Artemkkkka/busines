@@ -6,7 +6,6 @@ from .base import Base
 
 
 class Evaluation(Base):
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     task_id: Mapped[int] = mapped_column(ForeignKey("task.id"), nullable=False, index=True)
     evaluator_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False, index=True)
     score: Mapped[int] = mapped_column(Integer, nullable=False)

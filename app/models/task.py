@@ -13,7 +13,6 @@ class TaskStatus(str, enum.Enum):
 
 
 class Task(Base):
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     team_id: Mapped[int] = mapped_column(ForeignKey("team.id"), nullable=False, index=True)
     author_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False, index=True)
     assignee_id: Mapped[int | None] = mapped_column(ForeignKey("user.id"), nullable=True, index=True)
@@ -35,7 +34,6 @@ Index("ix_task_team_status_deadline", Task.team_id, Task.status, Task.deadline)
 
 
 class TaskComment(Base):
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     task_id: Mapped[int] = mapped_column(ForeignKey("task.id"), nullable=False, index=True)
     author_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False, index=True)
     body: Mapped[str] = mapped_column(Text(), nullable=False)

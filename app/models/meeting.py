@@ -5,7 +5,6 @@ from .base import Base
 
 
 class Meeting(Base):
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     team_id: Mapped[int] = mapped_column(ForeignKey("team.id"), nullable=False, index=True)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     notes: Mapped[str | None] = mapped_column(Text(), nullable=True)

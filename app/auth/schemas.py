@@ -7,26 +7,12 @@ Password = Annotated[str, StringConstraints(min_length=8, max_length=128)]
 
 
 class UserRead(schemas.BaseUser[int]):
-    global_role: str = "user"
+    pass
 
 
-class UserCreate(schemas.BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    email: EmailStr
-    password: Password
-
-    def create_update_dict(self):
-        data = self.model_dump(exclude_unset=True)
-        data.update(
-            {
-                "is_active": True,
-                "is_superuser": False,
-                "is_verified": False,
-            }
-        )
-        return data
+class UserCreate(schemas.BaseUserCreate):
+    pass
 
 
 class UserUpdate(schemas.BaseUserUpdate):
-    global_role: Optional[str] = None
+    pass
