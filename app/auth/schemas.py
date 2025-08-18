@@ -1,5 +1,5 @@
 from typing import Annotated, Optional
-from pydantic import EmailStr, StringConstraints, ConfigDict
+from pydantic import EmailStr, StringConstraints, BaseModel
 
 from fastapi_users import schemas
 
@@ -14,5 +14,9 @@ class UserCreate(schemas.BaseUserCreate):
     pass
 
 
-class UserUpdate(schemas.BaseUserUpdate):
+class UserSelfUpdate(BaseModel):
+    email: Optional[EmailStr] = None
+
+
+class UserAdminUpdate(schemas.BaseUserUpdate):
     pass

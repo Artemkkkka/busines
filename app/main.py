@@ -10,7 +10,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.v1.routes import router as api_v1_router
 from app.auth.actions.admin import router as admin_router
 from app.auth.auth import fastapi_users, auth_backend, current_user
-from app.auth.schemas import UserRead, UserCreate, UserUpdate
+from app.auth.users_self_router import build_self_router
+from app.auth.schemas import UserRead, UserCreate, UserAdminUpdate, UserSelfUpdate
 from app.core.config import settings
 from app.db.session import get_session
 from app.models.user import User
@@ -72,9 +73,19 @@ app.include_router(
 )
 
 app.include_router(
-    fastapi_users.get_users_router(UserRead, UserUpdate),
-    prefix="/users",
-    tags=["users"],
+    build_self_router(),
+)
+
+app.include_router(
+    fastapi_users.get_users_router(UserRead, UserAdminUpdate),
+    prefix="/admin/users",
+    tags=["admin"],
+)
+
+app.include_router(
+    fastapi_users.get_reset_password_router(),
+    prefix="/auth",
+    tags=["auth"],
 )
 
 users_me_delete_router = APIRouter()
