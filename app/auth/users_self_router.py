@@ -8,8 +8,8 @@ from .auth import current_user as current_active_user
 
 router = APIRouter(prefix="/users", tags=["users"])
 
-def build_self_router():
 
+def build_self_router():
     @router.get("/me", response_model=UserRead)
     async def get_me(user: User = Depends(current_active_user)):
         return user

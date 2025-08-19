@@ -15,6 +15,9 @@ from app.auth.schemas import UserRead, UserCreate, UserAdminUpdate, UserSelfUpda
 from app.core.config import settings
 from app.db.session import get_session
 from app.models.user import User
+from app.routers.system_routes import sys_router
+from app.routers.members import members_router
+from app.routers.teams import teams_router
 
 
 app = FastAPI(title=settings.APP_NAME)
@@ -29,7 +32,6 @@ app.add_middleware(
 
 templates = Jinja2Templates(directory="app/web/templates")
 
-http_bearer = HTTPBearer()
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
@@ -99,3 +101,6 @@ async def delete_me(user: User = Depends(current_user)):
 
 app.include_router(users_me_delete_router)
 app.include_router(admin_router)
+app.include_router(sys_router)
+app.include_router(members_router)
+app.include_router(teams_router)

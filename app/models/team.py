@@ -1,6 +1,6 @@
 import enum
 
-from sqlalchemy import Enum, String, ForeignKey
+from sqlalchemy import Enum, String, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -25,12 +25,16 @@ class TeamRole(str, enum.Enum):
 class Worker(Base):
     __tablename__ = "workers"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"), nullable=False, unique=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
     team_id: Mapped[int | None] = mapped_column(
         ForeignKey("team.id", ondelete="SET NULL"),
         nullable=True,
         index=True,
     )
     role_in_team: Mapped[TeamRole] = mapped_column(Enum(TeamRole, name="team_role"), nullable=False, default=TeamRole.employee)
-    user: Mapped["User"] = relationship(back_populates="worker")
+    user: Mapped["User"] = relationship(back_populates="teams")
     team: Mapped["Team"] = relationship(back_populates="members")
+    __table_args__ = (
+        # чтобы не было дублей членства в одной и той же команде
+        UniqueConstraint("user_id", "team_id", name="uq_worker_user_team"),
+    )

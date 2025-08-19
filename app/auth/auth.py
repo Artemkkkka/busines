@@ -16,6 +16,7 @@ def get_database_strategy(
 ) -> DatabaseStrategy:
     return DatabaseStrategy(access_token_db, lifetime_seconds=3600)
 
+
 auth_backend = AuthenticationBackend(
     name="access-tokens-db",
     transport=bearer_transport,
